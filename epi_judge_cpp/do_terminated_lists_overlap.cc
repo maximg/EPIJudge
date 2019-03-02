@@ -7,9 +7,34 @@ using std::shared_ptr;
 
 shared_ptr<ListNode<int>> OverlappingNoCycleLists(
     shared_ptr<ListNode<int>> l0, shared_ptr<ListNode<int>> l1) {
-  // TODO - you fill in here.
+
+  if (!l0 || !l1) return nullptr;
+  
+  int len0 = 0, len1 = 0;
+  shared_ptr<ListNode<int>> l0last, l1last;
+  for (auto l0t = l0; (l0t = l0t->next); ++len0)
+    l0last = l0t;
+  for (auto l1t = l1; (l1t = l1t->next); ++len1)
+    l1last = l1t;
+
+  if (l0last != l1last) return nullptr;
+
+  if (len0 < len1)
+    std::swap(l0, l1);
+
+  for ( int i = 0; i < abs(len0 - len1); ++i)
+    l0 = l0->next;
+
+  while (l0 && l1) {
+    if (l0 == l1)
+      return l0;
+    l0 = l0->next;
+    l1 = l1->next;
+  }
+
   return nullptr;
 }
+
 void OverlappingNoCycleListsWrapper(TimedExecutor& executor,
                                     shared_ptr<ListNode<int>> l0,
                                     shared_ptr<ListNode<int>> l1,
