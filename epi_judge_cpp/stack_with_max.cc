@@ -1,26 +1,33 @@
 #include <stdexcept>
+#include <vector>
 #include "test_framework/generic_test.h"
 #include "test_framework/serialization_traits.h"
 #include "test_framework/test_failure.h"
 using std::length_error;
 
 class Stack {
+  std::vector<int> stack;
+  std::vector<int> maxElems;
  public:
   bool Empty() const {
-    // TODO - you fill in here.
-    return true;
+    return stack.empty();
   }
   int Max() const {
-    // TODO - you fill in here.
-    return 0;
+    if (stack.empty())
+      throw std::runtime_error("empty stack");
+    return maxElems.back();
   }
   int Pop() {
-    // TODO - you fill in here.
-    return 0;
+    if (stack.empty())
+      throw std::runtime_error("empty stack");
+    int value = stack.back();
+    stack.pop_back();
+    maxElems.pop_back();
+    return value;
   }
   void Push(int x) {
-    // TODO - you fill in here.
-    return;
+    stack.push_back(x);
+    maxElems.push_back(std::max(x, maxElems.empty() ? x : maxElems.back()));      
   }
 };
 struct StackOp {
