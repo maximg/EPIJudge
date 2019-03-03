@@ -5,7 +5,22 @@
 using std::vector;
 
 int SearchEntryEqualToItsIndex(const vector<int>& A) {
-  // TODO - you fill in here.
+  if (A.empty()) return -1;
+  if (A.size() == 1) return A[0] == 0 ? 0 : -1;
+
+  if (A[0] > 0 || A.back() < A.size() - 1) return -1;
+
+  int l = 0, h = A.size() - 1;
+  while (l <= h) {
+    int m = l + (h - l) / 2;
+    if (A[m] > m)
+      h = m - 1;
+    else
+    if (A[m] < m)
+      l = m + 1;
+    else
+      return m;
+  }
   return 0;
 }
 void SearchEntryEqualToItsIndexWrapper(TimedExecutor& executor,
