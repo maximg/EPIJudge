@@ -4,33 +4,26 @@
 #include "test_framework/test_failure.h"
 #include "test_framework/timed_executor.h"
 
-int depth(BinaryTreeNode<int>* node) {
-  int count = 0;
-  while (node->parent) {
-    node = node->parent;
-    ++count;
-  }
-  return count;
-}
+#include <unordered_set>
 
 BinaryTreeNode<int>* LCA(const unique_ptr<BinaryTreeNode<int>>& node0,
                          const unique_ptr<BinaryTreeNode<int>>& node1) {
   if (!node0 || !node1)
     return nullptr;
 
-  auto p0 = node0.get(), p1 = node1.get();
-  int depth0 = depth(p0), depth1 = depth(p1);
-  if (depth0 < depth1)
-    std::swap(p0, p1);
+  std::unordered_set<BinaryTreeNode<int>*> seen;
 
-  for (int i = 0; i < abs(depth0 - depth1); ++i)
+  auto p0 = node0.get();
+  while (p0) {
+    seen.insert(p0);
     p0 = p0->parent;
-
-  while (p0 && p1 && p0 != p1) {
-    p0 = p0->parent;
-    p1 = p1->parent;
   }
-  return p0;
+
+  auto p1 = node1.get();
+  while (p1 && seen.find(p1) == seen.end())
+    p1 = p1->parent;
+
+  return p1;
 }
 
 int LcaWrapper(TimedExecutor& executor,
