@@ -4,8 +4,23 @@ using std::vector;
 
 vector<int> IntersectTwoSortedArrays(const vector<int>& A,
                                      const vector<int>& B) {
-  // TODO - you fill in here.
-  return {};
+    vector<int> result;
+    auto itA = A.cbegin(), itB = B.cbegin();
+    while (itA != A.cend() && itB != B.cend()) {
+        if (*itA < *itB) {
+            ++itA;
+        }
+        else if (*itB < *itA) {
+            ++itB;
+        }
+        else {
+            if (result.empty() || *itA != result.back())
+                result.emplace_back(*itA);
+            ++itA;
+            ++itB;
+        }
+    }
+    return result;
 }
 
 int main(int argc, char* argv[]) {
