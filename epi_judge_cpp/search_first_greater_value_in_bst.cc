@@ -3,35 +3,34 @@
 #include "test_framework/generic_test.h"
 using std::unique_ptr;
 
-BstNode<int>* minElement(const unique_ptr<BstNode<int>>& tree) {
-    if (!tree) return nullptr;
-    return tree->left ? minElement(tree->left) : tree.get();
-}
-
-BstNode<int>* helper(const unique_ptr<BstNode<int>>& tree,
-                     int k,
-                     BstNode<int>* candidate) {
-    // if k is equal to data, return ptr to min of right tree
-    // otherwise return succ(k) of left or right tree
-    if (!tree) return candidate;
-    if (tree->data < k) {
-        return helper(tree->right, k, candidate);
-    }
-    if (tree->data == k) {
-      if (tree->right)
-        return minElement(tree->right);
-      else
-        return candidate;
-    }
-    if (tree->data > k) {
-        return helper(tree->left, k, tree.get());
-    }
-    return nullptr;
-}
 
 BstNode<int>* FindFirstGreaterThanK(const unique_ptr<BstNode<int>>& tree,
                                     int k) {
-    return helper(tree, k, nullptr);
+  if (!tree) return nullptr;
+  auto current = tree.get();
+  BstNode<int>* candidate = nullptr;
+  while (true) {
+    if (current->data > k) { //left subtree
+      if (current->left) {
+        candidate = current;
+        current = current->left.get();
+      }
+      else
+        return current;
+    }
+    else if (current->data == k) {  // right subtree
+      if (current->right)
+        candidate = current = current->right.get();
+      else
+        return candidate;
+    }
+    else {  // current->data < k, right subtree
+      if (current->right)
+        current = current->right.get();
+      else
+        return candidate;
+    }
+  }
 }
 
 int FindFirstGreaterThanKWrapper(const unique_ptr<BstNode<int>>& tree, int k) {
