@@ -1,4 +1,5 @@
 #include <vector>
+#include <map>
 #include "test_framework/generic_test.h"
 #include "test_framework/serialization_traits.h"
 using std::vector;
@@ -8,8 +9,27 @@ struct Interval {
 };
 
 int FindMinimumVisits(vector<Interval> intervals) {
-  // TODO - you fill in here.
-  return 0;
+    std::sort(intervals.begin(), intervals.end(), [](const auto& a, const auto& b){
+        return a.right < b.right;
+    });
+    vector<bool> seen(intervals.size(), false);
+    std::multimap<int, size_t> lefts;
+    for (size_t i = 0; i < intervals.size(); ++i)
+        lefts.insert({intervals[i].left, i});
+
+    int count = 0;
+    auto it = lefts.begin();
+    for (size_t i = 0; i < intervals.size(); ++i) {
+        if (seen[i]) continue;
+        seen[i] = true;
+        ++count;
+        while (it != lefts.end() && it->first <= intervals[i].right) {
+            seen[it->second] = true;
+            ++it;
+        }
+    }
+
+    return count;
 }
 template <>
 struct SerializationTraits<Interval> : UserSerTraits<Interval, int, int> {};
