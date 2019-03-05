@@ -3,11 +3,37 @@
 #include "test_framework/generic_test.h"
 using std::unique_ptr;
 
+BstNode<int>* minElement(const unique_ptr<BstNode<int>>& tree) {
+    if (!tree) return nullptr;
+    return tree->left ? minElement(tree->left) : tree.get();
+}
+
+BstNode<int>* helper(const unique_ptr<BstNode<int>>& tree,
+                     int k,
+                     BstNode<int>* candidate) {
+    // if k is equal to data, return ptr to min of right tree
+    // otherwise return succ(k) of left or right tree
+    if (!tree) return candidate;
+    if (tree->data < k) {
+        return helper(tree->right, k, candidate);
+    }
+    if (tree->data == k) {
+      if (tree->right)
+        return minElement(tree->right);
+      else
+        return candidate;
+    }
+    if (tree->data > k) {
+        return helper(tree->left, k, tree.get());
+    }
+    return nullptr;
+}
+
 BstNode<int>* FindFirstGreaterThanK(const unique_ptr<BstNode<int>>& tree,
                                     int k) {
-  // TODO - you fill in here.
-  return nullptr;
+    return helper(tree, k, nullptr);
 }
+
 int FindFirstGreaterThanKWrapper(const unique_ptr<BstNode<int>>& tree, int k) {
   auto result = FindFirstGreaterThanK(tree, k);
   return result ? result->data : -1;
