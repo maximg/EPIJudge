@@ -6,6 +6,7 @@
 #include "test_framework/test_failure.h"
 #include "test_framework/timed_executor.h"
 using std::vector;
+using std::pair;
 typedef enum { kWhite, kBlack } Color;
 struct Coordinate {
   bool operator==(const Coordinate& that) const {
@@ -14,11 +15,39 @@ struct Coordinate {
 
   int x, y;
 };
+std::vector<Coordinate> moves({{-1, 0}, {1, 0}, {0, -1}, {0, 1}});
 vector<Coordinate> SearchMaze(vector<vector<Color>> maze, const Coordinate& s,
                               const Coordinate& e) {
-  // TODO - you fill in here.
-  return {};
+  vector<Coordinate> path;
+  path.push_back(s);
+  maze[s.x][s.y] = kBlack;
+  Coordinate current = s;
+  while (!(current == e)) {
+    bool found = false;
+    for (auto m: moves) {
+      int new_x = current.x + m.x;
+      int new_y = current.y + m.y;
+      if (new_x >= 0 && new_x < maze.size() &&
+          new_y >= 0 && new_y < maze[0].size() &&
+          maze[new_x][new_y] == kWhite) {
+        
+            current = { new_x, new_y };
+            path.push_back(current);
+            maze[new_x][new_y] = kBlack;
+            found = true;
+            break;
+        }
+    }
+    if (!found) {
+      path.pop_back();
+      if (path.empty())
+        return {};
+      current = path.back();      
+    }
+  }
+  return path;
 }
+
 template <>
 struct SerializationTraits<Color> : SerializationTraits<int> {
   using serialization_type = Color;
