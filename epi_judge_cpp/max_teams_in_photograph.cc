@@ -11,9 +11,26 @@ struct GraphVertex {
   int max_distance = 0;
 };
 
+int helper(GraphVertex& vtx) {
+  if (vtx.max_distance) return vtx.max_distance;
+  int depth = 1;
+  vtx.max_distance = -1; // visiting
+  for (auto other : vtx.edges) {
+    if (other->max_distance == -1) { exit(0); } // unexpected
+    depth = std::max(depth, 1 + helper(*other));
+  }
+  vtx.max_distance = depth;
+  return depth;
+}
 int FindLargestNumberTeams(vector<GraphVertex>* graph) {
-  // TODO - you fill in here.
-  return 0;
+ 
+  int depth = 0;
+  for (auto& vtx : *graph) {
+    if (vtx.max_distance == 0) {
+      depth = std::max(depth, helper(vtx));
+    }
+  }
+  return depth;
 }
 struct Edge {
   int from;
