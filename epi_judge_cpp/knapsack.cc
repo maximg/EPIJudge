@@ -8,8 +8,13 @@ struct Item {
 };
 
 int OptimumSubjectToCapacity(const vector<Item>& items, int capacity) {
-  // TODO - you fill in here.
-  return 0;
+  vector<int> knapsack(capacity + 1, 0);
+  for (auto item: items) {
+    for (int i = capacity; i >= item.weight; --i) {
+        knapsack[i] = std::max(knapsack[i], knapsack[i - item.weight] + item.value);
+    }
+  }
+  return knapsack[capacity];
 }
 template <>
 struct SerializationTraits<Item> : UserSerTraits<Item, int, int> {};
