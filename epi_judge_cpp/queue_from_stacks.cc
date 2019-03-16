@@ -1,19 +1,30 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <stack>
 #include "test_framework/generic_test.h"
 #include "test_framework/serialization_traits.h"
 #include "test_framework/test_failure.h"
 using std::length_error;
 class Queue {
+  std::stack<int> head, tail;
  public:
   void Enqueue(int x) {
-    // TODO - you fill in here.
+    tail.push(x);
     return;
   }
   int Dequeue() {
-    // TODO - you fill in here.
-    return 0;
+    if (head.empty()) {
+      while (!tail.empty()) {
+        head.push(tail.top());
+        tail.pop();
+      }
+    }
+    if (head.empty())
+      throw std::logic_error("queue is empty");
+    int tmp = head.top();
+    head.pop();
+    return tmp;
   }
 };
 struct QueueOp {
