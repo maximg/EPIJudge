@@ -6,10 +6,23 @@
 using std::string;
 using std::vector;
 
+
+unique_ptr<BinaryTreeNode<int>> helper(
+  vector<int*>::const_iterator& begin,
+  const vector<int*>::const_iterator& end) {
+  if (begin == end || *begin == nullptr)
+    return {};
+  auto node = std::make_unique<BinaryTreeNode<int>>(**begin);
+  if (++begin != end) node->left = helper(begin, end); 
+  if (++begin != end) node->right = helper(begin, end);
+  return node;
+}
+
+
 unique_ptr<BinaryTreeNode<int>> ReconstructPreorder(
     const vector<int*>& preorder) {
-  // TODO - you fill in here.
-  return nullptr;
+  auto begin = preorder.begin();
+  return helper(begin, preorder.end());
 }
 unique_ptr<BinaryTreeNode<int>> ReconstructPreorderWrapper(
     TimedExecutor& executor, const vector<string>& preorder) {
