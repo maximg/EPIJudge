@@ -1,20 +1,42 @@
 #include "test_framework/generic_test.h"
 #include "test_framework/serialization_traits.h"
 #include "test_framework/test_failure.h"
+#include <vector>
+#include <stdexcept>
 class Queue {
+  std::vector<int> buf;
+  size_t head = 0, tail = 0;
+
+  size_t resize() {
+    size_t tmp = (tail + 1) % buf.size();
+    if (tmp != head) return tmp;
+
+    size_t oldSize = buf.size(), newSize = oldSize*2;
+    buf.resize(newSize);
+    if (tail < head) {
+      std::copy_backward(buf.begin() + head,
+                         buf.begin() + oldSize,
+                         buf.end());
+      head = newSize - (oldSize - head);
+    }
+    return tail + 1;
+  }
  public:
-  Queue(size_t capacity) {}
+  Queue(size_t capacity) : buf(16) {}
   void Enqueue(int x) {
-    // TODO - you fill in here.
-    return;
+    size_t tmp = resize();
+    buf[tail] = x;
+    tail = tmp;
   }
   int Dequeue() {
-    // TODO - you fill in here.
-    return 0;
+    if (tail == head)
+      throw std::logic_error("queue empty");
+    size_t tmp = head;
+    head = (head + 1) % buf.size();
+    return buf[tmp];
   }
   int Size() const {
-    // TODO - you fill in here.
-    return 0;
+    return (tail > head) ? (tail - head) : ((tail + buf.size() - head) % buf.size());
   }
 };
 struct QueueOp {
