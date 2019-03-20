@@ -1,10 +1,21 @@
 #include <string>
+#include <unordered_map>
 #include "test_framework/generic_test.h"
 using std::string;
 
 bool CanFormPalindrome(const string& s) {
-  // TODO - you fill in here.
-  return true;
+  std::unordered_map<char, int> freqs;
+  for (char c: s) {
+  	freqs[c]++;
+  }
+  int odds = 0, evens = 0;
+  for (auto p: freqs) {
+  	if (p.second & 1)
+  		++odds;
+  	else
+  		++evens;
+  }
+  return odds < 2;
 }
 
 int main(int argc, char* argv[]) {
