@@ -1,11 +1,13 @@
 #include <string>
 #include <unordered_set>
+#include <unordered_map>
 #include <vector>
 #include "test_framework/generic_test.h"
 #include "test_framework/test_failure.h"
 #include "test_framework/timed_executor.h"
 using std::string;
 using std::unordered_set;
+using std::unordered_map;
 using std::vector;
 
 struct Subarray {
@@ -14,8 +16,32 @@ struct Subarray {
 
 Subarray FindSmallestSubarrayCoveringSet(
     const vector<string> &paragraph, const unordered_set<string> &keywords) {
-  // TODO - you fill in here.
-  return {0, 0};
+    Subarray cover{ -1, -1 };
+    size_t minDistance = paragraph.size();
+
+    unordered_map<string, int> counts;
+    auto tail = paragraph.begin();
+    for (auto head = paragraph.begin(); head != paragraph.end(); ++head) {
+        if (keywords.find(*head) != keywords.end()) {
+          counts[*head]++;
+        }
+        if (keywords.size() == counts.size()) {
+            while (tail != paragraph.end()) {
+                auto it = counts.find(*tail);
+                if (it != counts.end()) {
+                    if (it->second == 1) break;
+                    --(it->second);
+                }
+                ++tail;
+            }
+            if (std::distance(tail, head) < minDistance) {
+                cover.start = std::distance(paragraph.begin(), tail);
+                cover.end = std::distance(paragraph.begin(), head);
+                minDistance = std::distance(tail, head) + 1;
+            }
+        }
+    }
+    return cover;
 }
 int FindSmallestSubarrayCoveringSetWrapper(
     TimedExecutor &executor, const vector<string> &paragraph,
