@@ -7,8 +7,23 @@ struct Event {
   int start, finish;
 };
 int FindMaxSimultaneousEvents(const vector<Event>& A) {
-  // TODO - you fill in here.
-  return 0;
+    vector<std::pair<int, bool>> t;
+    for (auto& ev: A) {
+        t.push_back({ev.start, true});
+        t.push_back({ev.finish+1, false});
+    }
+    std::sort(t.begin(), t.end(), [](const auto& a, const auto& b){
+        if (a.first < b.first) return true;
+        if (a.first == b.first) return (!a.second && b.second);
+        return false;
+    });
+    int maxEv = 0;
+    int count = 0;
+    for (const auto& x: t) {
+        count += (x.second ? 1 : -1);
+        maxEv = std::max(maxEv, count);
+    }
+    return maxEv;
 }
 template <>
 struct SerializationTraits<Event> : UserSerTraits<Event, int, int> {};
