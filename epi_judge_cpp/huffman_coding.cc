@@ -1,5 +1,7 @@
 #include <string>
 #include <vector>
+#include <queue>
+#include <algorithm>
 #include "test_framework/generic_test.h"
 #include "test_framework/serialization_traits.h"
 using std::string;
@@ -10,9 +12,32 @@ struct CharWithFrequency {
   char c;
   double freq;
 };
+
+struct Node {
+  double w;
+  char c;
+  Node *l, *r;
+};
+
+double averageLength(Node* n, int depth) {
+  if (!n->l && !n->r) return depth * n->w;
+  return averageLength(n->l, depth+1) + averageLength(n->r, depth+1);
+}
 double HuffmanEncoding(vector<CharWithFrequency>* symbols) {
-  // TODO - you fill in here.
-  return 0.0;
+  auto comp = [](auto a, auto b) {
+    return a->w > b->w;
+  };
+  std::priority_queue<Node*, vector<Node*>, decltype(comp)> pq(comp);
+  for (const auto& s: *symbols) pq.push(new Node{s.freq, s.c, nullptr, nullptr});
+  while (pq.size() > 1) {
+    Node* l = pq.top(); pq.pop();
+    Node* r = pq.top(); pq.pop();
+    Node* n = new Node{l->w + r->w, '*', l, r};
+    pq.push(n);
+  }
+  // auto freqSum = 0.0;
+  // for (const auto& s: *symbols) freqSum += s.freq;
+  return averageLength(pq.top(), 0) / 100.0;  // looks like freqs are in %
 }
 }  // namespace huffman
 template <>
