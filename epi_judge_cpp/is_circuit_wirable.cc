@@ -10,8 +10,29 @@ struct GraphVertex {
   vector<GraphVertex*> edges;
 };
 
+bool check(GraphVertex& vtx) {
+  std::queue<GraphVertex*> bfs;
+  vtx.d = 0;
+  bfs.push(&vtx);
+  while (!bfs.empty()) {
+    auto v = bfs.front();
+    bfs.pop();
+    for (auto nbr: v->edges) {
+      if (nbr->d < 0) {
+        nbr->d = v->d == 0 ? 1 : 0;
+        bfs.push(nbr);
+      }
+      else if (nbr->d == v->d) return false;
+    }
+  }
+  return true;
+}
+
 bool IsAnyPlacementFeasible(vector<GraphVertex>* graph) {
-  // TODO - you fill in here.
+  for (auto& vtx: *graph) {
+    if (vtx.d < 0 && !check(vtx))
+      return false;
+  }
   return true;
 }
 struct Edge {
