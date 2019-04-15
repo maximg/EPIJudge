@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <unordered_map>
 #include "test_framework/generic_test.h"
 #include "test_framework/test_failure.h"
 #include "test_framework/timed_executor.h"
@@ -13,8 +14,34 @@ struct Subarray {
 
 Subarray FindSmallestSequentiallyCoveringSubset(
     const vector<string>& paragraph, const vector<string>& keywords) {
-  // TODO - you fill in here.
-  return {0, 0};
+  Subarray shortest{-1, (int)paragraph.size()+1};
+  // last found subarray terminating in corresponding keyword
+  vector<Subarray> partials(keywords.size(), {-1, -1});
+  std::unordered_map<string, int> index;
+  for (int i=0; i<keywords.size(); ++i)
+    index.insert({keywords[i], i});
+
+  for (int i=0; i<paragraph.size(); ++i) {
+    auto it = index.find(paragraph[i]);
+    if (it == index.end())
+      continue;
+    int j = it->second; // keyword index
+
+    if (j == 0)
+      partials[j].start = partials[j].end = i;
+    else
+    if (partials[j-1].start >= 0)
+    {
+      Subarray cand = {partials[j-1].start, i};
+      if (partials[j-1].start > partials[j].start)
+        partials[j] = cand;
+
+      if (j == partials.size()-1 && 
+        (cand.end - cand.start < shortest.end - shortest.start))
+          shortest = cand;
+    }
+  }
+  return shortest;
 }
 int FindSmallestSequentiallyCoveringSubsetWrapper(
     TimedExecutor& executor, const vector<string>& paragraph,
